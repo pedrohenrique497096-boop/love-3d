@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>LOVE 3D INSANO</title>
 
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  background: black;
+}
+canvas {
+  display: block;
+}
+</style>
+</head>
+
+<body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+<script>
+const scene = new THREE.Scene();
+
+// Câmera
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  5000
+);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Luz neon
+const light = new THREE.PointLight(0xff0080, 3);
+light.position.set(0, 0, 50);
+scene.add(light);
+
+// ===== TÚNEL 3D =====
+const tunnelGeometry = new THREE.CylinderGeometry(20, 20, 2000, 32, 1, true);
+const tunnelMaterial = new THREE.MeshBasicMaterial({
+  color: 0xff0077,
+  wireframe: true,
+  transparent: true,
+  opacity: 0.2
+});
+const tunnel = new THREE.Mesh(tunnelGeometry, tunnelMaterial);
+tunnel.rotation.x = Math.PI / 2;
+scene.add(tunnel);
+
+// ===== PARTÍCULAS =====
+const particlesGeometry = new THREE.BufferGeometry();
+const particlesCount = 2000;
+
+const posArray = new Float32Array(particlesCount * 3);
+
+for (let i = 0; i < particlesCount * 3; i++) {
+  posArray[i] = (Math.random() - 0.5) * 2000;
+}
+
+particlesGeometry.setAttribute(
+  "position",
+  new THREE.BufferAttribute(posArray, 3)
+);
+
+const particlesMaterial = new THREE.PointsMaterial({
+  size: 2,
+  color: 0xff4da6
+});
+
+const particlesMesh = new THREE.Points(
+  particlesGeometry,
+  particlesMaterial
+);
+
+scene.add(particlesMesh);
+
+// ===== TEXTOS =====
+const texts = [
+  "TE AMO ❤️",
+  "MEU AMOR 💖",
+  "PARA SEMPRE 💕",
+  "VOCÊ É TUDO 💘",
+  "MINHA VIDA 😍"
+];
+
+let sprites = [];
+
+function createText() {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = 512;
+  canvas.height = 256;
+
+  ctx.fillStyle = "#ff4da6";
+  ctx.font = "bold 50px Arial";
+  ctx.shadowColor = "#ff4da6";
+  ctx.shadowBlur = 20;
+
+  ctx.fillText(
+    texts[Math.floor(Math.random() * texts.length)],
+    50,
+    120
+  );
+
+  const texture = new THREE.CanvasTexture(canvas);
+
+  const material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true
+  });
+
+  const sprite = new THREE.Sprite(material);
+
+  sprite.position.set(
+    (Math.random() - 0.5) * 20,
+    (Math.random() - 0.5) * 10,
+    -2000
+  );
+
+  sprite.scale.set(10, 5, 1);
+
+  scene.add(sprite);
+  sprites.push(sprite);
+}
+
+setInterval(createText, 150);
+
+// ===== CÂMERA =====
+camera.position.z = 0;
+
+// ===== ANIMAÇÃO =====
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Movimento do túnel
+  tunnel.rotation.z += 0.002;
+
+  // Movimento partículas
+  particlesMesh.rotation.y += 0.0005;
+
+  // Textos vindo pra frente
+  sprites.forEach((s, i) => {
+    s.position.z += 15;
+
+    if (s.position.z > 50) {
+      scene.remove(s);
+      sprites.splice(i, 1);
+    }
+  });
+
+  renderer.render(scene, camera);
+}
+
+animate();
+
+// Responsivo
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
