@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8">
-<title>LOVE 3D INSANO</title>
+<title>LOVE 3D FINAL</title>
 
 <style>
 body {
@@ -14,7 +14,6 @@ canvas {
   display: block;
 }
 
-/* Botão música */
 #btnMusic {
   position: fixed;
   top: 20px;
@@ -36,8 +35,7 @@ canvas {
 <button id="btnMusic">▶️ Música</button>
 
 <audio id="music" loop>
-  <!-- COLOCA SUA MÚSICA AQUI -->
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+  <source src="musica.mp3" type="audio/mp3">
 </audio>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
@@ -45,6 +43,7 @@ canvas {
 <script>
 const scene = new THREE.Scene();
 
+// CÂMERA
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -56,7 +55,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Luz
+// LUZ
 const light = new THREE.PointLight(0xff0080, 3);
 light.position.set(0, 0, 50);
 scene.add(light);
@@ -67,7 +66,7 @@ const tunnelMaterial = new THREE.MeshBasicMaterial({
   color: 0xff0077,
   wireframe: true,
   transparent: true,
-  opacity: 0.2
+  opacity: 0.15
 });
 const tunnel = new THREE.Mesh(tunnelGeometry, tunnelMaterial);
 tunnel.rotation.x = Math.PI / 2;
@@ -75,7 +74,7 @@ scene.add(tunnel);
 
 // ===== PARTÍCULAS =====
 const particlesGeometry = new THREE.BufferGeometry();
-const particlesCount = 2000;
+const particlesCount = 1500;
 const posArray = new Float32Array(particlesCount * 3);
 
 for (let i = 0; i < particlesCount * 3; i++) {
@@ -88,7 +87,7 @@ particlesGeometry.setAttribute(
 );
 
 const particlesMaterial = new THREE.PointsMaterial({
-  size: 2,
+  size: 1.5,
   color: 0xff4da6
 });
 
@@ -105,14 +104,19 @@ const texts = [
   "MEU AMOR 💖",
   "PARA SEMPRE 💕",
   "VOCÊ É TUDO 💘",
-  "MINHA VIDA 😍",
-  "MINHA PEQUENA 🙃",
-  "MINHA ESPOSA 🫠",
-  "MANU MINHA GATA😮‍💨"
+  "MINHA VIDA 😍"
+];
+
+// ===== IMAGENS =====
+const imagens = [
+  "foto1.png",
+  "foto2.png",
+  "foto3.png"
 ];
 
 let sprites = [];
 
+// TEXTO
 function createText() {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -121,7 +125,7 @@ function createText() {
   canvas.height = 256;
 
   ctx.fillStyle = "#ff4da6";
-  ctx.font = "bold 50px Arial";
+  ctx.font = "bold 48px Arial";
   ctx.shadowColor = "#ff4da6";
   ctx.shadowBlur = 20;
 
@@ -143,7 +147,7 @@ function createText() {
   sprite.position.set(
     (Math.random() - 0.5) * 20,
     (Math.random() - 0.5) * 10,
-    -2000
+    -2500
   );
 
   sprite.scale.set(10, 5, 1);
@@ -152,24 +156,51 @@ function createText() {
   sprites.push(sprite);
 }
 
-// MAIS LENTO (antes era 150)
-setInterval(createText, 400);
+// IMAGEM
+function createImage() {
+  const texture = new THREE.TextureLoader().load(
+    imagens[Math.floor(Math.random() * imagens.length)]
+  );
 
-// ===== CÂMERA =====
+  const material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true
+  });
+
+  const sprite = new THREE.Sprite(material);
+
+  sprite.position.set(
+    (Math.random() - 0.5) * 20,
+    (Math.random() - 0.5) * 10,
+    -2500
+  );
+
+  sprite.scale.set(6, 6, 1);
+
+  scene.add(sprite);
+  sprites.push(sprite);
+}
+
+// MAIS LENTO (PERFEITO PRA LER)
+setInterval(() => {
+  createText();
+  createImage();
+}, 1500);
+
+// CÂMERA
 camera.position.z = 0;
 
-// ===== ANIMAÇÃO =====
+// ANIMAÇÃO
 function animate() {
   requestAnimationFrame(animate);
 
-  tunnel.rotation.z += 0.001; // mais lento
-
+  tunnel.rotation.z += 0.0008;
   particlesMesh.rotation.y += 0.0002;
 
   sprites.forEach((s, i) => {
-    s.position.z += 0,01; // ANTES ERA 15 → AGORA MAIS LENTO
+    s.position.z += 0.8; // SUPER LENTO
 
-    if (s.position.z > 50) {
+    if (s.position.z > 200) {
       scene.remove(s);
       sprites.splice(i, 1);
     }
@@ -180,7 +211,7 @@ function animate() {
 
 animate();
 
-// ===== MÚSICA =====
+// MÚSICA
 const music = document.getElementById("music");
 const btn = document.getElementById("btnMusic");
 
@@ -194,7 +225,7 @@ btn.onclick = () => {
   }
 };
 
-// Responsivo
+// RESPONSIVO
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
