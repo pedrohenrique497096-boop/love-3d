@@ -13,17 +13,38 @@ body {
 canvas {
   display: block;
 }
+
+/* Botão música */
+#btnMusic {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  background: rgba(255,0,128,0.7);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
 </style>
 </head>
 
 <body>
+
+<button id="btnMusic">▶️ Música</button>
+
+<audio id="music" loop>
+  <!-- COLOCA SUA MÚSICA AQUI -->
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+</audio>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 
 <script>
 const scene = new THREE.Scene();
 
-// Câmera
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
@@ -35,12 +56,12 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// Luz neon
+// Luz
 const light = new THREE.PointLight(0xff0080, 3);
 light.position.set(0, 0, 50);
 scene.add(light);
 
-// ===== TÚNEL 3D =====
+// ===== TÚNEL =====
 const tunnelGeometry = new THREE.CylinderGeometry(20, 20, 2000, 32, 1, true);
 const tunnelMaterial = new THREE.MeshBasicMaterial({
   color: 0xff0077,
@@ -55,7 +76,6 @@ scene.add(tunnel);
 // ===== PARTÍCULAS =====
 const particlesGeometry = new THREE.BufferGeometry();
 const particlesCount = 2000;
-
 const posArray = new Float32Array(particlesCount * 3);
 
 for (let i = 0; i < particlesCount * 3; i++) {
@@ -129,7 +149,8 @@ function createText() {
   sprites.push(sprite);
 }
 
-setInterval(createText, 150);
+// MAIS LENTO (antes era 150)
+setInterval(createText, 400);
 
 // ===== CÂMERA =====
 camera.position.z = 0;
@@ -138,15 +159,12 @@ camera.position.z = 0;
 function animate() {
   requestAnimationFrame(animate);
 
-  // Movimento do túnel
-  tunnel.rotation.z += 0.002;
+  tunnel.rotation.z += 0.001; // mais lento
 
-  // Movimento partículas
-  particlesMesh.rotation.y += 0.0005;
+  particlesMesh.rotation.y += 0.0002;
 
-  // Textos vindo pra frente
   sprites.forEach((s, i) => {
-    s.position.z += 15;
+    s.position.z += 5; // ANTES ERA 15 → AGORA MAIS LENTO
 
     if (s.position.z > 50) {
       scene.remove(s);
@@ -158,6 +176,20 @@ function animate() {
 }
 
 animate();
+
+// ===== MÚSICA =====
+const music = document.getElementById("music");
+const btn = document.getElementById("btnMusic");
+
+btn.onclick = () => {
+  if (music.paused) {
+    music.play();
+    btn.innerText = "⏸️ Pausar";
+  } else {
+    music.pause();
+    btn.innerText = "▶️ Música";
+  }
+};
 
 // Responsivo
 window.addEventListener("resize", () => {
