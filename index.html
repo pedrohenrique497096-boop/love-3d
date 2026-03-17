@@ -105,7 +105,10 @@ const texts = [
   "MEU AMOR 💖",
   "PARA SEMPRE 💕",
   "VOCÊ É TUDO 💘",
-  "MINHA VIDA 😍"
+  "MINHA VIDA 😍",
+  "MINHA PEQUENA 🙃",
+  "MINHA ESPOSA 🫠",
+  "MANU MINHA GATA😮‍💨"
 ];
 
 let sprites = [];
@@ -164,7 +167,7 @@ function animate() {
   particlesMesh.rotation.y += 0.0002;
 
   sprites.forEach((s, i) => {
-    s.position.z += 2; // ANTES ERA 15 → AGORA MAIS LENTO
+    s.position.z += 0,8; // ANTES ERA 15 → AGORA MAIS LENTO
 
     if (s.position.z > 50) {
       scene.remove(s);
