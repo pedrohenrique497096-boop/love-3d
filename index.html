@@ -164,7 +164,7 @@ function animate() {
   particlesMesh.rotation.y += 0.0002;
 
   sprites.forEach((s, i) => {
-    s.position.z += 5; // ANTES ERA 15 → AGORA MAIS LENTO
+    s.position.z += 2; // ANTES ERA 15 → AGORA MAIS LENTO
 
     if (s.position.z > 50) {
       scene.remove(s);
