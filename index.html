@@ -107,11 +107,13 @@ const texts = [
   "MINHA VIDA 😍"
 ];
 
-// ===== IMAGENS =====
+// ===== 5 FOTOS =====
 const imagens = [
   "foto1.png",
   "foto2.png",
-  "foto3.png"
+  "foto3.png",
+  "foto4.png",
+  "foto5.png"
 ];
 
 let sprites = [];
@@ -181,16 +183,18 @@ function createImage() {
   sprites.push(sprite);
 }
 
-// MAIS LENTO (PERFEITO PRA LER)
+// 🎯 PROPORÇÃO: MAIS FOTOS QUE TEXTO
 setInterval(() => {
-  createText();
   createImage();
+  createImage();
+  createImage(); // 3 fotos
+  createText();  // 1 texto
 }, 1500);
 
 // CÂMERA
 camera.position.z = 0;
 
-// ANIMAÇÃO
+// ANIMAÇÃO (SUPER LENTO)
 function animate() {
   requestAnimationFrame(animate);
 
@@ -198,7 +202,7 @@ function animate() {
   particlesMesh.rotation.y += 0.0002;
 
   sprites.forEach((s, i) => {
-    s.position.z += 0.8; // SUPER LENTO
+    s.position.z += 0.8;
 
     if (s.position.z > 200) {
       scene.remove(s);
