@@ -12,30 +12,18 @@ body {
   font-family: Arial;
 }
 
-/* CONTROLES */
 #controls {
   position: fixed;
   top: 20px;
   left: 20px;
   z-index: 10;
+  color: white;
 }
 
 #speed {
   width: 120px;
 }
 
-/* TEXTO */
-#mensagem {
-  position: fixed;
-  bottom: 40px;
-  width: 100%;
-  text-align: center;
-  font-size: 22px;
-  color: #fff;
-  text-shadow: 0 0 20px #ff4da6;
-}
-
-/* TÍTULO */
 #titulo {
   position: fixed;
   top: 20px;
@@ -44,6 +32,16 @@ body {
   font-size: 28px;
   color: #ff4da6;
   text-shadow: 0 0 15px #ff4da6;
+}
+
+#mensagem {
+  position: fixed;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  font-size: 22px;
+  color: #fff;
+  text-shadow: 0 0 20px #ff4da6;
 }
 </style>
 </head>
@@ -71,7 +69,7 @@ Você é a poesia que meu coração sempre quis escrever 💖
 <script>
 const scene = new THREE.Scene();
 
-// GALÁXIA (ESTRELAS)
+// GALÁXIA
 const starsGeometry = new THREE.BufferGeometry();
 const starsCount = 2000;
 const posArray = new Float32Array(starsCount * 3);
@@ -98,7 +96,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// FRASES ROMÂNTICAS
+// FRASES
 const palavras = [
 "Te amo além do tempo ❤️",
 "Você é meu universo 💖",
@@ -112,8 +110,13 @@ const palavras = [
 "Se amar você for sonho, não quero acordar 💗"
 ];
 
-// FOTOS
-const fotos = ["foto1.png","foto2.png","foto3.png","foto4.png","foto5.png"];
+// SUAS FOTOS (EXATAMENTE COMO NO GITHUB)
+const fotos = [
+  "foto.png",
+  "Screenshot_20260321_045923_Gallery.jpg",
+  "Screenshot_20260321_045933_Gallery.jpg",
+  "Screenshot_20260321_045941_Gallery.jpg"
+];
 
 let sprites = [];
 let speed = 1;
@@ -131,14 +134,23 @@ function createText() {
   ctx.shadowColor = "#ff4da6";
   ctx.shadowBlur = 20;
 
-  ctx.fillText(palavras[Math.floor(Math.random()*palavras.length)], 50,120);
+  ctx.fillText(
+    palavras[Math.floor(Math.random()*palavras.length)],
+    50,
+    120
+  );
 
   const texture = new THREE.CanvasTexture(canvas);
   const material = new THREE.SpriteMaterial({ map: texture, transparent:true });
 
   const sprite = new THREE.Sprite(material);
 
-  sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
+  sprite.position.set(
+    (Math.random()-0.5)*15,
+    (Math.random()-0.5)*8,
+    -2000
+  );
+
   sprite.scale.set(8,4,1);
 
   scene.add(sprite);
@@ -154,14 +166,19 @@ function createPhoto() {
   const material = new THREE.SpriteMaterial({ map:texture, transparent:true });
   const sprite = new THREE.Sprite(material);
 
-  sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
+  sprite.position.set(
+    (Math.random()-0.5)*15,
+    (Math.random()-0.5)*8,
+    -2000
+  );
+
   sprite.scale.set(6,6,1);
 
   scene.add(sprite);
   sprites.push(sprite);
 }
 
-// INTERVALOS
+// INTERVALO
 setInterval(()=>{
   createText();
   createPhoto();
@@ -186,7 +203,7 @@ function animate(){
 }
 animate();
 
-// CONTROLE DE VELOCIDADE
+// VELOCIDADE
 document.getElementById("speed").oninput = (e)=>{
   speed = e.target.value;
 };
