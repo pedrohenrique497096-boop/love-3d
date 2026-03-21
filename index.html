@@ -34,15 +34,18 @@ body{
   border-radius:12px;
 }
 
-/* CARTA */
+/* CARTA (AGORA FORTE E VISÍVEL) */
 #carta{
   position:fixed;
-  top:25%;
+  top:30%;
   width:100%;
   text-align:center;
-  font-size:22px;
+  font-size:26px;
   color:#fff;
-  text-shadow:0 0 15px #ff4da6;
+  text-shadow:0 0 25px #ff4da6;
+  z-index:50;
+  opacity:0;
+  transition:1.5s;
 }
 
 /* CONTROLES */
@@ -52,6 +55,8 @@ body{
   width:100%;
   text-align:center;
   color:white;
+  font-size:18px;
+  z-index:50;
 }
 
 #speed{
@@ -107,15 +112,21 @@ const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// CARTA
+// FRASES (ESSENCIAL)
 const frases=[
 "Manu...",
-"Desde que você entrou na minha vida...",
+"Se existe destino...",
+"foi ele que me levou até você...",
+"Desde que você chegou...",
+"tudo mudou...",
 "tudo ficou mais bonito...",
-"você é meu melhor acaso...",
-"meu coração é seu...",
-"em qualquer vida...",
+"mais leve...",
+"mais verdadeiro...",
+"Você é meu melhor acaso...",
+"meu lugar seguro...",
+"Em qualquer vida...",
 "eu escolheria você...",
+"mil vezes...",
 "Te amo ❤️"
 ];
 
@@ -130,7 +141,7 @@ const fotos=[
 let sprites=[];
 let speed=1;
 
-// FOTO CINEMA (POLAROID)
+// FOTO
 function createPhoto(x,y){
 
   const loader=new THREE.TextureLoader();
@@ -145,13 +156,11 @@ function createPhoto(x,y){
 
       const ratio = texture.image.width / texture.image.height || 1;
 
-      const baseSize = 4 + Math.random()*1.5;
-      sprite.scale.set(baseSize*ratio, baseSize,1);
+      const size = 4 + Math.random()*1.5;
+      sprite.scale.set(size*ratio,size,1);
 
-      // COMEÇA FORA (cinema)
       sprite.position.set(x*2,y*2,-150);
 
-      // ROTAÇÃO SUAVE
       sprite.rotation = (Math.random()-0.5)*0.4;
 
       sprite.userData={
@@ -167,7 +176,7 @@ function createPhoto(x,y){
   );
 }
 
-// MONTAGEM REAL (COLAGEM)
+// MONTAGEM
 function gerarMontagem(){
 
   const quantidade = Math.floor(Math.random()*5)+3;
@@ -177,8 +186,8 @@ function gerarMontagem(){
 
   for(let i=0;i<quantidade;i++){
 
-    const offsetX = (Math.random()-0.5)*4;
-    const offsetY = (Math.random()-0.5)*3;
+    const offsetX = (Math.random()-0.5)*3;
+    const offsetY = (Math.random()-0.5)*2;
 
     setTimeout(()=>{
       createPhoto(baseX + offsetX, baseY + offsetY);
@@ -237,17 +246,22 @@ document.getElementById("speed").oninput=(e)=>{
 
 // CARTA
 let i=0;
+const carta = document.getElementById("carta");
+
 function escrever(){
   if(i<frases.length){
-    document.getElementById("carta").innerHTML += frases[i]+"<br>";
+    carta.innerHTML += frases[i]+"<br>";
     i++;
-    setTimeout(escrever,2000);
+    setTimeout(escrever,1800);
   }
 }
 
 // START
 document.getElementById("startBtn").onclick=()=>{
   document.getElementById("startScreen").style.display="none";
+
+  carta.style.opacity = 1; // AGORA APARECE
+
   document.getElementById("music").play();
 
   escrever();
