@@ -5,70 +5,58 @@
 <title>Pedro ❤️ Manu</title>
 
 <style>
-body {
-  margin: 0;
-  overflow: hidden;
-  background: black;
-  font-family: Arial;
+body{
+  margin:0;
+  overflow:hidden;
+  background:black;
+  font-family:Arial;
 }
 
-/* BOTÃO INICIAR */
-#startScreen {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(#ff4da6, black);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-  color: white;
-  flex-direction: column;
+/* START */
+#startScreen{
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:black;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:20;
+  color:white;
+  transition:1s;
 }
 
-#startBtn {
-  padding: 15px 25px;
-  font-size: 18px;
-  background: #ff4da6;
-  border: none;
-  border-radius: 10px;
+#startBtn{
+  padding:15px 30px;
+  font-size:20px;
+  background:#ff4da6;
+  border:none;
+  border-radius:12px;
 }
 
-/* NOME CENTRAL */
-#nome {
-  position: fixed;
-  top: 40%;
-  width: 100%;
-  text-align: center;
-  font-size: 60px;
-  color: #ff4da6;
-  text-shadow: 0 0 20px #ff4da6;
-  opacity: 0;
+/* CARTA */
+#carta{
+  position:fixed;
+  top:30%;
+  width:100%;
+  text-align:center;
+  font-size:22px;
+  color:#fff;
+  text-shadow:0 0 15px #ff4da6;
 }
 
-/* VELOCIDADE */
-#controls {
-  position: fixed;
-  bottom: 20px;
-  width: 100%;
-  text-align: center;
-  z-index: 10;
-  color: white;
+/* CONTROLES */
+#controls{
+  position:fixed;
+  bottom:20px;
+  width:100%;
+  text-align:center;
+  color:white;
 }
 
-#speed {
-  width: 250px;
-}
-
-/* FRASE */
-#mensagem {
-  position: fixed;
-  bottom: 80px;
-  width: 100%;
-  text-align: center;
-  color: white;
-  font-size: 20px;
-  text-shadow: 0 0 10px #ff4da6;
+#speed{
+  width:300px;
 }
 </style>
 </head>
@@ -80,11 +68,7 @@ body {
   <button id="startBtn">Abrir surpresa</button>
 </div>
 
-<div id="nome">Pedro ❤️ Manu</div>
-
-<div id="mensagem">
-Você é tudo pra mim 💖
-</div>
+<div id="carta"></div>
 
 <div id="controls">
   Velocidade<br>
@@ -98,67 +82,75 @@ Você é tudo pra mim 💖
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 
 <script>
+// CENA
 const scene = new THREE.Scene();
 
-// GALÁXIA
+// ESTRELAS
 const starsGeometry = new THREE.BufferGeometry();
-const starsCount = 2000;
-const posArray = new Float32Array(starsCount * 3);
+const starsCount = 4000;
+const posArray = new Float32Array(starsCount*3);
 
-for (let i = 0; i < starsCount * 3; i++) {
-  posArray[i] = (Math.random() - 0.5) * 2000;
+for(let i=0;i<starsCount*3;i++){
+  posArray[i]=(Math.random()-0.5)*2000;
 }
 
-starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-const starsMaterial = new THREE.PointsMaterial({ size: 1.2, color: 0xffffff });
-const stars = new THREE.Points(starsGeometry, starsMaterial);
+starsGeometry.setAttribute('position', new THREE.BufferAttribute(posArray,3));
+const starsMaterial = new THREE.PointsMaterial({size:1,color:0xffffff});
+const stars = new THREE.Points(starsGeometry,starsMaterial);
 scene.add(stars);
 
 // CÂMERA
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 5000);
-camera.position.z = 0;
+const camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight,0.1,5000);
+camera.position.z=0;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 // FRASES
-const palavras = [
-"Te amo ❤️","Você é meu universo 💖","Meu amor 💕","Minha vida 😍",
-"Para sempre 💘","Manu 💖","Pedro ama você 💞"
+const frases=[
+"Manu...",
+"Desde que você entrou na minha vida...",
+"tudo ganhou cor...",
+"tudo ganhou sentido...",
+"Você é meu sonho que virou realidade...",
+"Meu coração escolheu você...",
+"e escolheria mil vezes...",
+"em qualquer vida...",
+"em qualquer universo...",
+"Te amo ❤️"
 ];
 
-// FOTOS (SEUS NOMES)
-const fotos = [
+// FOTOS
+const fotos=[
 "foto.png",
 "Screenshot_20260321_045923_Gallery.jpg",
 "Screenshot_20260321_045933_Gallery.jpg",
 "Screenshot_20260321_045941_Gallery.jpg"
 ];
 
-let sprites = [];
-let speed = 1;
+let sprites=[];
+let speed=1;
 
 // TEXTO
-function createText() {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
+function createText(){
+  const canvas=document.createElement("canvas");
+  const ctx=canvas.getContext("2d");
 
-  canvas.width = 512;
-  canvas.height = 256;
+  canvas.width=512;
+  canvas.height=256;
 
-  ctx.fillStyle = "#ff4da6";
-  ctx.font = "bold 40px Arial";
-  ctx.shadowColor = "#ff4da6";
-  ctx.shadowBlur = 20;
+  ctx.fillStyle="#ff4da6";
+  ctx.font="bold 40px Arial";
+  ctx.shadowColor="#ff4da6";
+  ctx.shadowBlur=20;
 
-  ctx.fillText(palavras[Math.floor(Math.random()*palavras.length)], 50,120);
+  ctx.fillText("Te amo ❤️",50,120);
 
-  const texture = new THREE.CanvasTexture(canvas);
-  const material = new THREE.SpriteMaterial({ map: texture });
+  const texture=new THREE.CanvasTexture(canvas);
+  const material=new THREE.SpriteMaterial({map:texture});
 
-  const sprite = new THREE.Sprite(material);
+  const sprite=new THREE.Sprite(material);
 
   sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
   sprite.scale.set(8,4,1);
@@ -168,39 +160,66 @@ function createText() {
 }
 
 // FOTO
-function createPhoto() {
-  const texture = new THREE.TextureLoader().load(
+function createPhoto(){
+  const texture=new THREE.TextureLoader().load(
     fotos[Math.floor(Math.random()*fotos.length)]
   );
 
-  const material = new THREE.SpriteMaterial({ map:texture });
-  const sprite = new THREE.Sprite(material);
+  const material=new THREE.SpriteMaterial({map:texture});
+  const sprite=new THREE.Sprite(material);
+
+  const ratio = texture.image.width / texture.image.height || 1;
+  sprite.scale.set(6*ratio,6,1);
 
   sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
-  sprite.scale.set(6,6,1);
 
   scene.add(sprite);
   sprites.push(sprite);
 }
 
-// INTERVALO
+// CORAÇÃO
+function createHeart(){
+  const canvas=document.createElement("canvas");
+  const ctx=canvas.getContext("2d");
+
+  canvas.width=200;
+  canvas.height=200;
+
+  ctx.font="80px Arial";
+  ctx.fillText("❤️",50,120);
+
+  const texture=new THREE.CanvasTexture(canvas);
+  const material=new THREE.SpriteMaterial({map:texture});
+  const sprite=new THREE.Sprite(material);
+
+  sprite.scale.set(2.5,2.5,1);
+
+  sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
+
+  scene.add(sprite);
+  sprites.push(sprite);
+}
+
+// LOOP
 function startAnimation(){
   setInterval(()=>{
-    createText();
     createPhoto();
-  },1500);
+    createHeart();
+    createText();
+  },2000);
 }
 
 // ANIMAÇÃO
 function animate(){
   requestAnimationFrame(animate);
 
-  stars.rotation.y += 0.0005;
+  stars.rotation.y+=0.0005;
+  camera.position.z -= 0.02; // efeito zoom cinema
 
   sprites.forEach((s,i)=>{
-    s.position.z += 1 * speed;
+    s.position.z+=0.8*speed;
 
-    if(s.position.z > 200){
+    if(s.position.z>200){
       scene.remove(s);
       sprites.splice(i,1);
     }
@@ -211,33 +230,31 @@ function animate(){
 animate();
 
 // VELOCIDADE
-document.getElementById("speed").oninput = (e)=>{
-  speed = e.target.value;
+document.getElementById("speed").oninput=(e)=>{
+  speed=e.target.value;
 };
 
-// ANIMAÇÃO DO NOME
-function animarNome(){
-  const nome = document.getElementById("nome");
-  nome.style.opacity = 1;
-  nome.style.transform = "scale(0.5)";
-
-  setTimeout(()=>{
-    nome.style.transition = "1.5s";
-    nome.style.transform = "scale(1.5)";
-  },100);
-
-  setTimeout(()=>{
-    nome.style.transform = "translateX(-300px)";
-  },2500);
+// CARTA DIGITANDO
+let i=0;
+function escrever(){
+  if(i<frases.length){
+    document.getElementById("carta").innerHTML += frases[i] + "<br>";
+    i++;
+    setTimeout(escrever,2000);
+  }
 }
 
-// INICIAR
-document.getElementById("startBtn").onclick = ()=>{
-  document.getElementById("startScreen").style.display = "none";
+// START
+document.getElementById("startBtn").onclick=()=>{
+  document.getElementById("startScreen").style.opacity=0;
+
+  setTimeout(()=>{
+    document.getElementById("startScreen").style.display="none";
+  },1000);
 
   document.getElementById("music").play();
 
-  animarNome();
+  escrever();
   startAnimation();
 };
 </script>
