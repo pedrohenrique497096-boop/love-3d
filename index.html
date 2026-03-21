@@ -122,7 +122,7 @@ const frases=[
 "Te amo ❤️"
 ];
 
-// FOTOS (SEUS NOMES)
+// FOTOS
 const fotos=[
 "foto.png",
 "Screenshot_20260321_045923_Gallery.jpg",
@@ -133,52 +133,39 @@ const fotos=[
 let sprites=[];
 let speed=1;
 
-// TEXTO
-function createText(){
-  const canvas=document.createElement("canvas");
-  const ctx=canvas.getContext("2d");
-
-  canvas.width=512;
-  canvas.height=256;
-
-  ctx.fillStyle="#ff4da6";
-  ctx.font="bold 40px Arial";
-  ctx.shadowColor="#ff4da6";
-  ctx.shadowBlur=20;
-
-  ctx.fillText("Te amo ❤️",50,120);
-
-  const texture=new THREE.CanvasTexture(canvas);
-  const material=new THREE.SpriteMaterial({map:texture});
-
-  const sprite=new THREE.Sprite(material);
-
-  sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
-  sprite.scale.set(8,4,1);
-
-  scene.add(sprite);
-  sprites.push(sprite);
-}
-
-// FOTO (CORRIGIDO)
+// FOTO CINEMÁTICA (4 DIREÇÕES)
 function createPhoto(){
+
   const loader=new THREE.TextureLoader();
 
   loader.load(
     fotos[Math.floor(Math.random()*fotos.length)],
 
     function(texture){
+
       const material=new THREE.SpriteMaterial({map:texture});
       const sprite=new THREE.Sprite(material);
 
       const ratio = texture.image.width / texture.image.height || 1;
       sprite.scale.set(6*ratio,6,1);
 
-      sprite.position.set(
-        (Math.random()-0.5)*15,
-        (Math.random()-0.5)*8,
-        -2000
-      );
+      // DIREÇÃO ALEATÓRIA (4 LADOS)
+      const side = Math.floor(Math.random()*4);
+
+      let startX=0, startY=0;
+
+      if(side===0){ startX = -20; startY = 0; } // esquerda
+      if(side===1){ startX = 20; startY = 0; }  // direita
+      if(side===2){ startX = 0; startY = 12; }  // cima
+      if(side===3){ startX = 0; startY = -12; } // baixo
+
+      sprite.position.set(startX, startY, -50);
+
+      sprite.userData = {
+        targetX: 0,
+        targetY: 0,
+        progress: 0
+      };
 
       scene.add(sprite);
       sprites.push(sprite);
@@ -203,7 +190,11 @@ function createHeart(){
 
   sprite.scale.set(2.5,2.5,1);
 
-  sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
+  sprite.position.set(
+    (Math.random()-0.5)*15,
+    (Math.random()-0.5)*8,
+    -200
+  );
 
   scene.add(sprite);
   sprites.push(sprite);
@@ -214,24 +205,41 @@ function startAnimation(){
   setInterval(()=>{
     createPhoto();
     createHeart();
-    createText();
   },2000);
 }
 
-// ANIMAÇÃO
+// ANIMAÇÃO SUAVE (DESACELERA)
 function animate(){
   requestAnimationFrame(animate);
 
   stars.rotation.y+=0.0005;
-  camera.position.z -= 0.02;
 
   sprites.forEach((s,i)=>{
-    s.position.z+=0.8*speed;
 
-    if(s.position.z>200){
+    if(s.userData.progress !== undefined){
+
+      s.userData.progress += 0.02 * speed;
+
+      // easing (rápido → lento)
+      let t = s.userData.progress;
+      t = 1 - Math.pow(1 - t, 3);
+
+      s.position.x = (1 - t) * s.position.x;
+      s.position.y = (1 - t) * s.position.y;
+
+      if(s.userData.progress >= 1){
+        s.userData.progress = undefined;
+      }
+
+    } else {
+      s.position.z += 0.6 * speed;
+    }
+
+    if(s.position.z > 50){
       scene.remove(s);
       sprites.splice(i,1);
     }
+
   });
 
   renderer.render(scene,camera);
