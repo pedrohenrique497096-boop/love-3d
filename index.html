@@ -24,7 +24,6 @@ body{
   flex-direction:column;
   z-index:20;
   color:white;
-  transition:1s;
 }
 
 #startBtn{
@@ -53,10 +52,13 @@ body{
   width:100%;
   text-align:center;
   color:white;
+  font-size:18px;
 }
 
 #speed{
-  width:300px;
+  width:90%;
+  height:25px;
+  accent-color:#ff4da6;
 }
 </style>
 </head>
@@ -82,10 +84,9 @@ body{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 
 <script>
-// CENA
 const scene = new THREE.Scene();
 
-// ESTRELAS
+// GALÁXIA
 const starsGeometry = new THREE.BufferGeometry();
 const starsCount = 4000;
 const posArray = new Float32Array(starsCount*3);
@@ -121,7 +122,7 @@ const frases=[
 "Te amo ❤️"
 ];
 
-// FOTOS
+// FOTOS (SEUS NOMES)
 const fotos=[
 "foto.png",
 "Screenshot_20260321_045923_Gallery.jpg",
@@ -159,22 +160,30 @@ function createText(){
   sprites.push(sprite);
 }
 
-// FOTO
+// FOTO (CORRIGIDO)
 function createPhoto(){
-  const texture=new THREE.TextureLoader().load(
-    fotos[Math.floor(Math.random()*fotos.length)]
+  const loader=new THREE.TextureLoader();
+
+  loader.load(
+    fotos[Math.floor(Math.random()*fotos.length)],
+
+    function(texture){
+      const material=new THREE.SpriteMaterial({map:texture});
+      const sprite=new THREE.Sprite(material);
+
+      const ratio = texture.image.width / texture.image.height || 1;
+      sprite.scale.set(6*ratio,6,1);
+
+      sprite.position.set(
+        (Math.random()-0.5)*15,
+        (Math.random()-0.5)*8,
+        -2000
+      );
+
+      scene.add(sprite);
+      sprites.push(sprite);
+    }
   );
-
-  const material=new THREE.SpriteMaterial({map:texture});
-  const sprite=new THREE.Sprite(material);
-
-  const ratio = texture.image.width / texture.image.height || 1;
-  sprite.scale.set(6*ratio,6,1);
-
-  sprite.position.set((Math.random()-0.5)*15,(Math.random()-0.5)*8,-2000);
-
-  scene.add(sprite);
-  sprites.push(sprite);
 }
 
 // CORAÇÃO
@@ -214,7 +223,7 @@ function animate(){
   requestAnimationFrame(animate);
 
   stars.rotation.y+=0.0005;
-  camera.position.z -= 0.02; // efeito zoom cinema
+  camera.position.z -= 0.02;
 
   sprites.forEach((s,i)=>{
     s.position.z+=0.8*speed;
@@ -234,11 +243,11 @@ document.getElementById("speed").oninput=(e)=>{
   speed=e.target.value;
 };
 
-// CARTA DIGITANDO
+// CARTA
 let i=0;
 function escrever(){
   if(i<frases.length){
-    document.getElementById("carta").innerHTML += frases[i] + "<br>";
+    document.getElementById("carta").innerHTML += frases[i]+"<br>";
     i++;
     setTimeout(escrever,2000);
   }
@@ -246,12 +255,7 @@ function escrever(){
 
 // START
 document.getElementById("startBtn").onclick=()=>{
-  document.getElementById("startScreen").style.opacity=0;
-
-  setTimeout(()=>{
-    document.getElementById("startScreen").style.display="none";
-  },1000);
-
+  document.getElementById("startScreen").style.display="none";
   document.getElementById("music").play();
 
   escrever();
