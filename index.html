@@ -108,7 +108,7 @@ const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// FRASES
+// FRASES (mantém só carta)
 const frases=[
 "Manu...",
 "Desde que você entrou na minha vida...",
@@ -133,7 +133,7 @@ const fotos=[
 let sprites=[];
 let speed=1;
 
-// FOTO CINEMÁTICA (4 DIREÇÕES)
+// FUNÇÃO FOTO
 function createPhoto(){
 
   const loader=new THREE.TextureLoader();
@@ -149,22 +149,21 @@ function createPhoto(){
       const ratio = texture.image.width / texture.image.height || 1;
       sprite.scale.set(6*ratio,6,1);
 
-      // DIREÇÃO ALEATÓRIA (4 LADOS)
       const side = Math.floor(Math.random()*4);
 
-      let startX=0, startY=0;
+      let x=0,y=0;
 
-      if(side===0){ startX = -20; startY = 0; } // esquerda
-      if(side===1){ startX = 20; startY = 0; }  // direita
-      if(side===2){ startX = 0; startY = 12; }  // cima
-      if(side===3){ startX = 0; startY = -12; } // baixo
+      if(side===0){x=-20;y=0;}
+      if(side===1){x=20;y=0;}
+      if(side===2){x=0;y=12;}
+      if(side===3){x=0;y=-12;}
 
-      sprite.position.set(startX, startY, -50);
+      sprite.position.set(x,y,-50);
 
-      sprite.userData = {
-        targetX: 0,
-        targetY: 0,
-        progress: 0
+      sprite.userData={
+        targetX:0,
+        targetY:0,
+        progress:0
       };
 
       scene.add(sprite);
@@ -173,42 +172,32 @@ function createPhoto(){
   );
 }
 
-// CORAÇÃO
-function createHeart(){
-  const canvas=document.createElement("canvas");
-  const ctx=canvas.getContext("2d");
+// SEQUÊNCIA (VARIAÇÃO)
+const sequencia = [1,3,5,2,3,1,6,2];
+let indexSeq = 0;
 
-  canvas.width=200;
-  canvas.height=200;
+function spawnSequencia(){
 
-  ctx.font="80px Arial";
-  ctx.fillText("❤️",50,120);
+  let quantidade = sequencia[indexSeq];
 
-  const texture=new THREE.CanvasTexture(canvas);
-  const material=new THREE.SpriteMaterial({map:texture});
-  const sprite=new THREE.Sprite(material);
+  for(let i=0;i<quantidade;i++){
+    setTimeout(()=>createPhoto(), i*200);
+  }
 
-  sprite.scale.set(2.5,2.5,1);
-
-  sprite.position.set(
-    (Math.random()-0.5)*15,
-    (Math.random()-0.5)*8,
-    -200
-  );
-
-  scene.add(sprite);
-  sprites.push(sprite);
+  indexSeq++;
+  if(indexSeq >= sequencia.length){
+    indexSeq = 0;
+  }
 }
 
 // LOOP
 function startAnimation(){
   setInterval(()=>{
-    createPhoto();
-    createHeart();
-  },2000);
+    spawnSequencia();
+  },2500);
 }
 
-// ANIMAÇÃO SUAVE (DESACELERA)
+// ANIMAÇÃO
 function animate(){
   requestAnimationFrame(animate);
 
@@ -220,7 +209,6 @@ function animate(){
 
       s.userData.progress += 0.02 * speed;
 
-      // easing (rápido → lento)
       let t = s.userData.progress;
       t = 1 - Math.pow(1 - t, 3);
 
