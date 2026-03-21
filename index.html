@@ -34,6 +34,17 @@ body{
   border-radius:12px;
 }
 
+/* CARTA */
+#carta{
+  position:fixed;
+  top:25%;
+  width:100%;
+  text-align:center;
+  font-size:22px;
+  color:#fff;
+  text-shadow:0 0 15px #ff4da6;
+}
+
 /* CONTROLES */
 #controls{
   position:fixed;
@@ -58,6 +69,8 @@ body{
   <button id="startBtn">Abrir surpresa</button>
 </div>
 
+<div id="carta"></div>
+
 <div id="controls">
   Velocidade<br>
   <input type="range" id="speed" min="0.2" max="3" step="0.1" value="1">
@@ -74,7 +87,7 @@ const scene = new THREE.Scene();
 
 // GALÁXIA
 const starsGeometry = new THREE.BufferGeometry();
-const starsCount = 4000;
+const starsCount = 5000;
 const posArray = new Float32Array(starsCount*3);
 
 for(let i=0;i<starsCount*3;i++){
@@ -94,6 +107,18 @@ const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// CARTA
+const frases=[
+"Manu...",
+"Desde que você entrou na minha vida...",
+"tudo ficou mais bonito...",
+"você é meu melhor acaso...",
+"meu coração é seu...",
+"em qualquer vida...",
+"eu escolheria você...",
+"Te amo ❤️"
+];
+
 // FOTOS
 const fotos=[
 "foto.png",
@@ -105,7 +130,7 @@ const fotos=[
 let sprites=[];
 let speed=1;
 
-// CRIAR FOTO
+// FOTO CINEMA (POLAROID)
 function createPhoto(x,y){
 
   const loader=new THREE.TextureLoader();
@@ -119,15 +144,21 @@ function createPhoto(x,y){
       const sprite=new THREE.Sprite(material);
 
       const ratio = texture.image.width / texture.image.height || 1;
-      sprite.scale.set(5*ratio,5,1);
 
-      // começa mais longe
-      sprite.position.set(x*2,y*2,-100);
+      const baseSize = 4 + Math.random()*1.5;
+      sprite.scale.set(baseSize*ratio, baseSize,1);
+
+      // COMEÇA FORA (cinema)
+      sprite.position.set(x*2,y*2,-150);
+
+      // ROTAÇÃO SUAVE
+      sprite.rotation = (Math.random()-0.5)*0.4;
 
       sprite.userData={
         targetX:x,
         targetY:y,
-        progress:0
+        progress:0,
+        depth: Math.random()*30
       };
 
       scene.add(sprite);
@@ -136,21 +167,22 @@ function createPhoto(x,y){
   );
 }
 
-// GERADOR DE MONTAGEM
+// MONTAGEM REAL (COLAGEM)
 function gerarMontagem(){
 
-  const quantidade = Math.floor(Math.random()*5)+1;
+  const quantidade = Math.floor(Math.random()*5)+3;
 
   const baseX = (Math.random()-0.5)*6;
   const baseY = (Math.random()-0.5)*4;
 
   for(let i=0;i<quantidade;i++){
 
-    // posição estilo montagem (lado a lado + variação)
-    const offsetX = (i - quantidade/2) * 2 + (Math.random()-0.5)*1;
-    const offsetY = (Math.random()-0.5)*2;
+    const offsetX = (Math.random()-0.5)*4;
+    const offsetY = (Math.random()-0.5)*3;
 
-    createPhoto(baseX + offsetX, baseY + offsetY);
+    setTimeout(()=>{
+      createPhoto(baseX + offsetX, baseY + offsetY);
+    }, i*150);
   }
 }
 
@@ -158,7 +190,7 @@ function gerarMontagem(){
 function startAnimation(){
   setInterval(()=>{
     gerarMontagem();
-  },2500);
+  },3000);
 }
 
 // ANIMAÇÃO
@@ -184,10 +216,10 @@ function animate(){
       }
 
     } else {
-      s.position.z += 0.6 * speed;
+      s.position.z += (0.5 + s.userData.depth/100) * speed;
     }
 
-    if(s.position.z > 50){
+    if(s.position.z > 80){
       scene.remove(s);
       sprites.splice(i,1);
     }
@@ -203,10 +235,22 @@ document.getElementById("speed").oninput=(e)=>{
   speed=e.target.value;
 };
 
+// CARTA
+let i=0;
+function escrever(){
+  if(i<frases.length){
+    document.getElementById("carta").innerHTML += frases[i]+"<br>";
+    i++;
+    setTimeout(escrever,2000);
+  }
+}
+
 // START
 document.getElementById("startBtn").onclick=()=>{
   document.getElementById("startScreen").style.display="none";
   document.getElementById("music").play();
+
+  escrever();
   startAnimation();
 };
 </script>
