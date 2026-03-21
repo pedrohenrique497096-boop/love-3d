@@ -108,20 +108,6 @@ const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// FRASES (mantém só carta)
-const frases=[
-"Manu...",
-"Desde que você entrou na minha vida...",
-"tudo ganhou cor...",
-"tudo ganhou sentido...",
-"Você é meu sonho que virou realidade...",
-"Meu coração escolheu você...",
-"e escolheria mil vezes...",
-"em qualquer vida...",
-"em qualquer universo...",
-"Te amo ❤️"
-];
-
 // FOTOS
 const fotos=[
 "foto.png",
@@ -133,8 +119,8 @@ const fotos=[
 let sprites=[];
 let speed=1;
 
-// FUNÇÃO FOTO
-function createPhoto(){
+// CRIAR FOTO EM POSIÇÃO ESPECÍFICA
+function createPhotoAt(x,y){
 
   const loader=new THREE.TextureLoader();
 
@@ -147,22 +133,14 @@ function createPhoto(){
       const sprite=new THREE.Sprite(material);
 
       const ratio = texture.image.width / texture.image.height || 1;
-      sprite.scale.set(6*ratio,6,1);
+      sprite.scale.set(5*ratio,5,1);
 
-      const side = Math.floor(Math.random()*4);
-
-      let x=0,y=0;
-
-      if(side===0){x=-20;y=0;}
-      if(side===1){x=20;y=0;}
-      if(side===2){x=0;y=12;}
-      if(side===3){x=0;y=-12;}
-
-      sprite.position.set(x,y,-50);
+      // começa fora da tela (zoom cinema)
+      sprite.position.set(x*3,y*3,-100);
 
       sprite.userData={
-        targetX:0,
-        targetY:0,
+        targetX:x,
+        targetY:y,
         progress:0
       };
 
@@ -172,16 +150,42 @@ function createPhoto(){
   );
 }
 
-// SEQUÊNCIA (VARIAÇÃO)
-const sequencia = [1,3,5,2,3,1,6,2];
+// SEQUÊNCIA BONITA
+const sequencia = [1,3,5,2,3,1,4,2];
 let indexSeq = 0;
 
-function spawnSequencia(){
+function spawnGrupo(){
 
-  let quantidade = sequencia[indexSeq];
+  const qtd = sequencia[indexSeq];
 
-  for(let i=0;i<quantidade;i++){
-    setTimeout(()=>createPhoto(), i*200);
+  if(qtd === 1){
+    createPhotoAt(0,0);
+  }
+
+  if(qtd === 2){
+    createPhotoAt(-3,0);
+    createPhotoAt(3,0);
+  }
+
+  if(qtd === 3){
+    createPhotoAt(-4,0);
+    createPhotoAt(0,0);
+    createPhotoAt(4,0);
+  }
+
+  if(qtd === 4){
+    createPhotoAt(-3,2);
+    createPhotoAt(3,2);
+    createPhotoAt(-3,-2);
+    createPhotoAt(3,-2);
+  }
+
+  if(qtd === 5){
+    createPhotoAt(-4,2);
+    createPhotoAt(4,2);
+    createPhotoAt(0,0);
+    createPhotoAt(-4,-2);
+    createPhotoAt(4,-2);
   }
 
   indexSeq++;
@@ -193,11 +197,11 @@ function spawnSequencia(){
 // LOOP
 function startAnimation(){
   setInterval(()=>{
-    spawnSequencia();
-  },2500);
+    spawnGrupo();
+  },3000);
 }
 
-// ANIMAÇÃO
+// ANIMAÇÃO SUAVE
 function animate(){
   requestAnimationFrame(animate);
 
@@ -212,8 +216,8 @@ function animate(){
       let t = s.userData.progress;
       t = 1 - Math.pow(1 - t, 3);
 
-      s.position.x = (1 - t) * s.position.x;
-      s.position.y = (1 - t) * s.position.y;
+      s.position.x = (1 - t) * s.position.x + t * s.userData.targetX;
+      s.position.y = (1 - t) * s.position.y + t * s.userData.targetY;
 
       if(s.userData.progress >= 1){
         s.userData.progress = undefined;
@@ -239,22 +243,10 @@ document.getElementById("speed").oninput=(e)=>{
   speed=e.target.value;
 };
 
-// CARTA
-let i=0;
-function escrever(){
-  if(i<frases.length){
-    document.getElementById("carta").innerHTML += frases[i]+"<br>";
-    i++;
-    setTimeout(escrever,2000);
-  }
-}
-
 // START
 document.getElementById("startBtn").onclick=()=>{
   document.getElementById("startScreen").style.display="none";
   document.getElementById("music").play();
-
-  escrever();
   startAnimation();
 };
 </script>
