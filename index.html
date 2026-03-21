@@ -34,7 +34,7 @@ body{
   border-radius:12px;
 }
 
-/* CARTA (AGORA FORTE E VISÍVEL) */
+/* CARTA */
 #carta{
   position:fixed;
   top:30%;
@@ -112,7 +112,7 @@ const renderer = new THREE.WebGLRenderer({antialias:true});
 renderer.setSize(window.innerWidth,window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// FRASES (ESSENCIAL)
+// FRASES
 const frases=[
 "Manu...",
 "Se existe destino...",
@@ -176,7 +176,7 @@ function createPhoto(x,y){
   );
 }
 
-// MONTAGEM
+// MONTAGEM (RÁPIDA + GRUDADA)
 function gerarMontagem(){
 
   const quantidade = Math.floor(Math.random()*5)+3;
@@ -191,18 +191,18 @@ function gerarMontagem(){
 
     setTimeout(()=>{
       createPhoto(baseX + offsetX, baseY + offsetY);
-    }, i*150);
+    }, i*100);
   }
 }
 
-// LOOP
+// LOOP (MAIS RÁPIDO)
 function startAnimation(){
   setInterval(()=>{
     gerarMontagem();
-  },3000);
+  },1200);
 }
 
-// ANIMAÇÃO
+// ANIMAÇÃO (ENTRADA RÁPIDA + FINAL SUAVE)
 function animate(){
   requestAnimationFrame(animate);
 
@@ -212,7 +212,7 @@ function animate(){
 
     if(s.userData.progress !== undefined){
 
-      s.userData.progress += 0.02 * speed;
+      s.userData.progress += 0.05 * speed;
 
       let t = s.userData.progress;
       t = 1 - Math.pow(1 - t, 3);
@@ -252,20 +252,20 @@ function escrever(){
   if(i<frases.length){
     carta.innerHTML += frases[i]+"<br>";
     i++;
-    setTimeout(escrever,1800);
+    setTimeout(escrever,1500);
   }
 }
 
-// START
+// START (SINCRONIZADO)
 document.getElementById("startBtn").onclick=()=>{
   document.getElementById("startScreen").style.display="none";
 
-  carta.style.opacity = 1; // AGORA APARECE
+  carta.style.opacity = 1;
 
   document.getElementById("music").play();
 
   escrever();
-  startAnimation();
+  startAnimation(); // COMEÇA JUNTO
 };
 </script>
 
